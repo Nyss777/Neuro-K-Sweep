@@ -64,7 +64,7 @@ if __name__ == "__main__":
     new_location_path = None
 
     try:
-        with open(CONFIG_FILE) as f:
+        with open(CONFIG_FILE, encoding="utf-8-sig") as f:
             try:
                 songs_line = f.readline()
                 new_location_line = f.readline()
