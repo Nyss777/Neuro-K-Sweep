@@ -48,10 +48,13 @@ jobs:
           uv run pyinstaller \
             --onefile \
             --name "neuro_k_sweep-${{ steps.version.outputs.version }}" \
+            --paths . \
             --paths lib \
+            --collect-submodules lib \
             --collect-all karaoke_parser \
             --collect-all metadata_utils \
-            src/neuro_k_sweep/main.py
+            --add-data "lib;lib" \
+            src/neuro_k_sweep/main.py   
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
