@@ -4,13 +4,10 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, cast
 
-from metadata_utils.CF_Program import Song, get_all_mp3_as_obj
 from thefuzz import fuzz, process
 
-with open(Path(__file__).parent.parent.parent / "config.json") as f:
-    CONFIGS = json.load(f)
+from lib.metadata_utils.CF_Program import Song, get_all_mp3_as_obj
 
-ARCHIVE_PATH = Path(CONFIGS["ARCHIVE_PATH"])
 
 def wilson_interval(p: float, z: float, n: int) -> tuple[float, float]:
     term_1 = p + z**2/(2*n)
@@ -183,6 +180,12 @@ def basic_positive_test(
 
 
 if __name__ == "__main__":
+
+    with open(Path(__file__).parent.parent.parent / "config.json") as f:
+        CONFIGS = json.load(f)
+
+    ARCHIVE_PATH = Path(CONFIGS["ARCHIVE_PATH"])
+
 
     # S definition
     songs = [song for song in get_all_mp3_as_obj(ARCHIVE_PATH) if song.Discnumber not in ("1", "2")]
