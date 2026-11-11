@@ -11,9 +11,12 @@ from lib.metadata_utils.CF_Program import Song
 
 logger = logging.getLogger(__name__)
 
-SCRIPT_FOLDER = Path(__file__).parent.parent.parent 
+if getattr(sys, 'frozen', False):
+    SCRIPT_FOLDER = Path(sys.executable).parent
+else:
+    SCRIPT_FOLDER = Path(__file__).parent.absolute()
+ 
 
-LOG_DIRECTORY = SCRIPT_FOLDER / "Logs"
 CONFIG_FILE = SCRIPT_FOLDER / "config.txt"
 
 def setup_logger():
