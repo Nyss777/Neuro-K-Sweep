@@ -122,3 +122,5 @@ if __name__ == "__main__":
     else:
         logger.info(f"{original_count - new_count} songs were moved.")
 
+    input("Press Enter to close this window.\n")
+
