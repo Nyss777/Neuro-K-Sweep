@@ -9,8 +9,6 @@ from thefuzz import fuzz
 from lib.karaoke_parser.analyze_version import match_best
 from lib.metadata_utils.CF_Program import Song
 
-# find out what songs are 'upgradable'
-
 logger = logging.getLogger(__name__)
 
 SCRIPT_FOLDER = Path(__file__).parent.parent.parent 
@@ -44,41 +42,39 @@ def move(song: Song, new_location_path: Path):
     parent = song.path.parent.name
     new_song_path = new_location_path / parent / filename
 
-    print(f"moved {song} to {new_song_path}")
-
     os.makedirs(os.path.dirname(new_song_path), exist_ok=True) ## side-effect
     #shutil.copy2(src=song.path, dst=new_song_path) ## side-effect
-    shutil.move(src=song.path, dst=new_song_path) ## side-effect
 
-    try:
-        song.save()
-        print(song.path)
+    if new_song_path.exists():
+        os.remove(new_song_path)
 
-    except FileExistsError:
-        logger.exception("Error")
-
-
+    else:
+        shutil.move(src=song.path, dst=new_song_path) ## side-effect
 
 if __name__ == "__main__":
 
     setup_logger()
 
-    print(f"SCRIPT_DIR: {SCRIPT_FOLDER}")
+    logger.debug(f"SCRIPT_DIR: {SCRIPT_FOLDER}")
 
     songs_path = None
     new_location_path = None
-    with open(CONFIG_FILE) as f:
-        try:
-            songs_line = f.readline()
-            new_location_line = f.readline()
 
-            songs_path = Path(songs_line.strip()).expanduser()
-            new_location_path = Path(new_location_line.strip()).expanduser()
-            print(f"Songs Path: {songs_path}")
-            print(f"New Path: {new_location_path}")
+    try:
+        with open(CONFIG_FILE) as f:
+            try:
+                songs_line = f.readline()
+                new_location_line = f.readline()
 
-        except Exception:
-            logger.exception("Unable to parse config file.")
+                songs_path = Path(songs_line.strip()).expanduser()
+                new_location_path = Path(new_location_line.strip()).expanduser()
+                print(f"Songs Path: {songs_path}")
+                print(f"New Path: {new_location_path}")
+
+            except Exception:
+                logger.exception("Unable to parse config file.")
+    except FileNotFoundError:
+        logger.error(f"Config file not found, program expects a config file at {CONFIG_FILE}")
 
     if songs_path is None or new_location_path is None:
         logger.error("Invalid path in config file.")
@@ -112,10 +108,9 @@ if __name__ == "__main__":
             continue
 
         old_song = existing[0]
-        logger.debug(f"{Song} matched against old: {old_song}.")
+        logger.debug(f"{song} matched against old: {old_song}.")
         move(old_song, new_location_path)
         archive.remove(old_song)
-        break
 
     new_count = len(archive)
 
